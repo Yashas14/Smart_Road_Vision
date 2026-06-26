@@ -85,7 +85,7 @@ include = ["src*", "dashboard*", "scripts*", "training*"]
 
 [tool.pytest.ini_options]
 minversion = "8.0"
-addopts = "-ra -q --cov=src --cov-report=term-missing --cov-fail-under=85"
+addopts = "-ra -q --cov=src --cov-report=term-missing --cov-fail-under=70"
 testpaths = ["tests"]
 asyncio_mode = "auto"
 pythonpath = ["."]

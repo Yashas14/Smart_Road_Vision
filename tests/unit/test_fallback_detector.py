@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import sys
+
 import cv2
 import numpy as np
 import pytest
@@ -60,8 +62,12 @@ def test_max_detections_cap_is_respected(road_image: np.ndarray) -> None:
     assert detector.detect_image(road_image).count <= 1
 
 
-def test_anomaly_detector_falls_back_without_ultralytics(road_image: np.ndarray) -> None:
-    # ultralytics/torch are not installed in the test environment.
+def test_anomaly_detector_falls_back_without_ultralytics(
+    road_image: np.ndarray,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Force import-time fallback path regardless of CI environment packages.
+    monkeypatch.setitem(sys.modules, "ultralytics", object())
     detector = AnomalyDetector()
     detector.load()
     assert detector.using_fallback is True
