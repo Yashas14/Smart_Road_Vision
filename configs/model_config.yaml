@@ -1,0 +1,67 @@
+# ============================================================================
+# SmartRoadVision — Model configuration
+# Values here are defaults; environment variables (.env) override them.
+# ============================================================================
+
+yolo:
+  weights: models/yolov11-pothole.pt
+  imgsz: 640
+  confidence: 0.35
+  iou: 0.45
+  max_det: 300
+  device: auto            # auto | cpu | cuda:0
+  half: true              # FP16 inference on CUDA
+  agnostic_nms: false
+  augment: false          # test-time augmentation (TTA)
+  classes:
+    0: pothole
+    1: hump
+    2: crack
+    3: road_degradation
+
+segmentation:
+  enabled: true
+  model: sam2
+  checkpoint: models/sam2_hiera_small.pt
+  config: sam2_hiera_s.yaml
+  points_per_side: 32
+  pred_iou_thresh: 0.88
+
+depth:
+  enabled: true
+  model_type: DPT_Hybrid   # DPT_Large | DPT_Hybrid | MiDaS_small
+  hub_repo: intel-isl/MiDaS
+  # Empirical scale to convert relative inverse-depth into approximate millimetres.
+  depth_scale_mm: 120.0
+
+preprocessing:
+  clahe_clip_limit: 2.0
+  clahe_tile_grid: [8, 8]
+  denoise_h: 7
+  enable_night_mode: true
+  enable_rain_mode: false
+
+severity:
+  weights:
+    area: 0.30
+    depth: 0.35
+    confidence: 0.15
+    class: 0.20
+  class_weights:
+    pothole: 1.0
+    road_degradation: 0.8
+    crack: 0.6
+    hump: 0.5
+  thresholds:
+    low: 0.30
+    medium: 0.60
+    high: 0.80
+  # Normalisation reference for depth (mm) -> 0..1
+  depth_reference_mm: 150.0
+
+tracking:
+  enabled: true
+  tracker: bytetrack
+  track_thresh: 0.5
+  match_thresh: 0.8
+  track_buffer: 30

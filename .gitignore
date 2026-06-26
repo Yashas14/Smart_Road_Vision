@@ -1,0 +1,67 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.installed.cfg
+*.egg
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- Testing / coverage ---
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# --- Environment / secrets ---
+.env
+*.env
+!.env.example
+
+# --- Model weights & data ---
+models/*.pt
+models/*.onnx
+models/*.pth
+models/*.engine
+data/datasets/*
+!data/datasets/README.md
+data/samples/*
+!data/samples/README.md
+runs/
+wandb/
+
+# --- Outputs ---
+outputs/
+reports/*.pdf
+*.log
+logs/
+
+# --- Runtime data ---
+data/smartroadvision.db
+data/smartroadvision.db-shm
+data/smartroadvision.db-wal
+test_road.jpg
+
+# --- IDE / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# --- Docker ---
+*.pid

@@ -1,0 +1,49 @@
+# ============================================================================
+# SmartRoadVision — Application configuration
+# Values here are defaults; environment variables (.env) override them.
+# ============================================================================
+
+app:
+  name: SmartRoadVision
+  env: development
+  debug: true
+  host: 0.0.0.0
+  port: 8000
+  api_v1_prefix: /api/v1
+  cors_origins:
+    - http://localhost:8501
+    - http://localhost:3000
+
+server:
+  workers: 2
+  timeout_seconds: 120
+  max_upload_mb: 200
+
+logging:
+  level: INFO
+  json: false
+
+database:
+  pool_size: 10
+  max_overflow: 20
+  echo: false
+
+redis:
+  url: redis://redis:6379/0
+  detection_cache_ttl: 3600
+
+celery:
+  broker_url: redis://redis:6379/1
+  result_backend: redis://redis:6379/2
+  task_time_limit: 1800
+
+streaming:
+  max_fps: 30
+  density_window: 30
+  density_alert_threshold: 5
+  jpeg_quality: 80
+
+reporting:
+  output_dir: reports
+  max_gallery_images: 20
+  road_score_baseline: 100

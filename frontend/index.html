@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SmartRoadVision · Road Surface Intelligence</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9B%A3%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">🛣️</span>
+      <div>
+        <h1>SmartRoadVision</h1>
+        <p class="tagline">Road Surface Intelligence Platform</p>
+      </div>
+    </div>
+    <div class="status">
+      <span id="status-dot" class="dot dot-off"></span>
+      <span id="status-text">connecting…</span>
+      <span id="mode-badge" class="mode-badge hidden"></span>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="detect">🔍 Detect</button>
+    <button class="tab" data-tab="batch">🗂️ Batch</button>
+    <button class="tab" data-tab="video">🎬 Video</button>
+    <button class="tab" data-tab="webcam">📷 Live</button>
+    <button class="tab" data-tab="map">🗺️ Map</button>
+    <button class="tab" data-tab="analytics">📊 Analytics</button>
+    <button class="tab" data-tab="history">🕓 History</button>
+    <button class="tab" data-tab="reports">📄 Reports</button>
+  </nav>
+
+  <main>
+    <!-- ===================== DETECT ===================== -->
+    <section class="tab-panel active" id="panel-detect">
+      <div class="card upload-card">
+        <h2>Analyze a Road Image</h2>
+        <div id="dropzone" class="dropzone">
+          <input type="file" id="file-input" accept="image/*" hidden />
+          <div class="dz-inner">
+            <span class="dz-icon">📤</span>
+            <p><strong>Drag &amp; drop</strong> a road image here</p>
+            <p class="muted">or <button type="button" id="browse-btn" class="link-btn">browse files</button></p>
+            <p class="muted small">JPG · PNG · WEBP</p>
+          </div>
+          <img id="preview" class="preview hidden" alt="preview" />
+        </div>
+
+        <div class="controls">
+          <div class="field">
+            <label for="lat">Latitude <span class="muted">(optional)</span></label>
+            <input type="number" id="lat" step="any" placeholder="e.g. 12.9716" />
+          </div>
+          <div class="field">
+            <label for="lng">Longitude <span class="muted">(optional)</span></label>
+            <input type="number" id="lng" step="any" placeholder="e.g. 77.5946" />
+          </div>
+          <label class="checkbox"><input type="checkbox" id="annotate" checked /> Annotate</label>
+          <label class="checkbox"><input type="checkbox" id="use-geo" /> Use my GPS</label>
+        </div>
+
+        <button id="analyze-btn" class="primary-btn" disabled>
+          <span class="btn-label">🔍 Detect Anomalies</span>
+          <span class="spinner hidden" id="spinner"></span>
+        </button>
+        <p id="error" class="error hidden"></p>
+      </div>
+
+      <section id="results" class="results hidden">
+        <div class="metrics" id="metrics"></div>
+        <div class="results-grid">
+          <div class="card image-card">
+            <h3>Annotated Detection</h3>
+            <img id="result-image" class="result-image" alt="annotated result" />
+          </div>
+          <div class="card table-card">
+            <h3>Detected Anomalies <span id="anomaly-count" class="pill">0</span></h3>
+            <div class="severity-legend" id="severity-legend"></div>
+            <div class="table-wrap">
+              <table id="anomaly-table">
+                <thead><tr>
+                  <th>#</th><th>Type</th><th>Conf.</th><th>Severity</th>
+                  <th>Urgency</th><th>Depth</th><th>Cost</th>
+                </tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <p id="no-anomalies" class="ok-msg hidden">✅ No anomalies detected — road segment looks healthy.</p>
+            <button id="download-csv" class="ghost-btn hidden">⬇️ Export CSV</button>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- ===================== BATCH ===================== -->
+    <section class="tab-panel" id="panel-batch">
+      <div class="card">
+        <h2>Batch Image Analysis</h2>
+        <p class="muted">Upload many road images at once to build up history and analytics.</p>
+        <input type="file" id="batch-input" accept="image/*" multiple />
+        <button id="batch-btn" class="primary-btn" style="margin-top:1rem" disabled>
+          <span class="btn-label">🗂️ Analyze Batch</span>
+          <span class="spinner hidden" id="batch-spinner"></span>
+        </button>
+        <p id="batch-error" class="error hidden"></p>
+      </div>
+      <div id="batch-results" class="hidden">
+        <div class="metrics" id="batch-metrics"></div>
+        <div class="card">
+          <h3>Per-Image Results</h3>
+          <div class="batch-grid" id="batch-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== VIDEO ===================== -->
+    <section class="tab-panel" id="panel-video">
+      <div class="card">
+        <h2>Video Analysis</h2>
+        <p class="muted">Processes frames inline (no queue) and samples evenly. Best for short clips.</p>
+        <input type="file" id="video-input" accept="video/*" />
+        <div class="controls" style="margin-top:1rem">
+          <div class="field">
+            <label for="max-frames">Max frames to sample</label>
+            <input type="number" id="max-frames" value="40" min="5" max="120" />
+          </div>
+        </div>
+        <button id="video-btn" class="primary-btn" disabled>
+          <span class="btn-label">🎬 Analyze Video</span>
+          <span class="spinner hidden" id="video-spinner"></span>
+        </button>
+        <p id="video-error" class="error hidden"></p>
+      </div>
+      <div id="video-results" class="hidden">
+        <div class="metrics" id="video-metrics"></div>
+        <div class="card">
+          <h3>Sample Annotated Frames</h3>
+          <div class="batch-grid" id="video-frames"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== WEBCAM ===================== -->
+    <section class="tab-panel" id="panel-webcam">
+      <div class="card">
+        <h2>Live Webcam Detection</h2>
+        <p class="muted">Streams frames from your camera to the detector every couple of seconds.</p>
+        <div class="webcam-wrap">
+          <video id="webcam" autoplay playsinline muted></video>
+          <img id="webcam-result" class="result-image hidden" alt="live result" />
+        </div>
+        <div class="controls" style="margin-top:1rem">
+          <button id="webcam-start" class="primary-btn">▶️ Start Camera</button>
+          <button id="webcam-stop" class="ghost-btn hidden">⏹️ Stop</button>
+          <label class="checkbox"><input type="checkbox" id="webcam-persist" /> Save detections</label>
+        </div>
+        <div class="metrics" id="webcam-metrics" style="margin-top:1rem"></div>
+        <p id="webcam-error" class="error hidden"></p>
+      </div>
+    </section>
+
+    <!-- ===================== MAP ===================== -->
+    <section class="tab-panel" id="panel-map">
+      <div class="card">
+        <h2>Geospatial Map</h2>
+        <p class="muted">Geotagged detections plotted by severity. Larger markers = more anomalies.</p>
+        <div id="map"></div>
+        <button id="map-refresh" class="ghost-btn" style="margin-top:1rem">🔄 Refresh</button>
+        <span id="map-empty" class="muted hidden">No geotagged detections yet. Add GPS when analyzing.</span>
+      </div>
+    </section>
+
+    <!-- ===================== ANALYTICS ===================== -->
+    <section class="tab-panel" id="panel-analytics">
+      <div class="metrics" id="analytics-metrics"></div>
+      <div class="charts-grid">
+        <div class="card"><h3>Severity Distribution</h3><canvas id="chart-severity"></canvas></div>
+        <div class="card"><h3>Anomaly Types</h3><canvas id="chart-class"></canvas></div>
+        <div class="card"><h3>Urgency Breakdown</h3><canvas id="chart-urgency"></canvas></div>
+        <div class="card"><h3>Road Score Timeline</h3><canvas id="chart-timeline"></canvas></div>
+      </div>
+      <button id="analytics-refresh" class="ghost-btn">🔄 Refresh Analytics</button>
+    </section>
+
+    <!-- ===================== HISTORY ===================== -->
+    <section class="tab-panel" id="panel-history">
+      <div class="card">
+        <div class="history-head">
+          <h2>Detection History</h2>
+          <div>
+            <select id="history-source" class="select">
+              <option value="">All sources</option>
+              <option value="image">Image</option>
+              <option value="batch">Batch</option>
+              <option value="video">Video</option>
+              <option value="webcam">Webcam</option>
+            </select>
+            <button id="history-refresh" class="ghost-btn">🔄 Refresh</button>
+            <button id="history-clear" class="danger-btn">🗑️ Clear All</button>
+          </div>
+        </div>
+        <div class="history-grid" id="history-grid"></div>
+        <p id="history-empty" class="muted hidden">No detections stored yet.</p>
+      </div>
+    </section>
+
+    <!-- ===================== REPORTS ===================== -->
+    <section class="tab-panel" id="panel-reports">
+      <div class="card">
+        <h2>Maintenance Report</h2>
+        <p class="muted">Generate a PDF report summarizing all stored detections.</p>
+        <div class="field" style="max-width:420px">
+          <label for="report-title">Report title</label>
+          <input type="text" id="report-title" value="Road Maintenance Report" />
+        </div>
+        <button id="report-btn" class="primary-btn" style="margin-top:1rem">
+          <span class="btn-label">📄 Generate &amp; Download PDF</span>
+          <span class="spinner hidden" id="report-spinner"></span>
+        </button>
+        <p id="report-error" class="error hidden"></p>
+        <p id="report-ok" class="ok-msg hidden">✅ Report downloaded.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>SmartRoadVision v2.0 · YOLOv11 + OpenCV fallback · FastAPI</span>
+    <a href="/docs" target="_blank">API Docs ↗</a>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

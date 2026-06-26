@@ -1,0 +1,41 @@
+# ============================================================================
+# SmartRoadVision — Albumentations training augmentation pipeline
+# Consumed by custom training loops; YOLOv11's built-in augment=True is also
+# enabled in train.py. Tuned for road imagery (dashcam / drone) robustness.
+# ============================================================================
+
+augmentations:
+  - name: HorizontalFlip
+    params: { p: 0.5 }
+
+  - name: RandomBrightnessContrast
+    params: { brightness_limit: 0.25, contrast_limit: 0.25, p: 0.5 }
+
+  - name: HueSaturationValue
+    params: { hue_shift_limit: 10, sat_shift_limit: 20, val_shift_limit: 15, p: 0.4 }
+
+  - name: RandomShadow
+    params: { shadow_roi: [0, 0.5, 1, 1], num_shadows_lower: 1, num_shadows_upper: 2, p: 0.3 }
+
+  - name: RandomRain
+    params: { drop_length: 8, blur_value: 3, brightness_coefficient: 0.85, p: 0.15 }
+
+  - name: RandomFog
+    params: { fog_coef_lower: 0.1, fog_coef_upper: 0.3, alpha_coef: 0.08, p: 0.1 }
+
+  - name: MotionBlur
+    params: { blur_limit: 5, p: 0.2 }
+
+  - name: GaussNoise
+    params: { var_limit: [10.0, 40.0], p: 0.2 }
+
+  - name: CLAHE
+    params: { clip_limit: 2.0, tile_grid_size: [8, 8], p: 0.3 }
+
+  - name: ShiftScaleRotate
+    params: { shift_limit: 0.06, scale_limit: 0.1, rotate_limit: 7, p: 0.4 }
+
+bbox_params:
+  format: yolo
+  label_fields: [class_labels]
+  min_visibility: 0.3
