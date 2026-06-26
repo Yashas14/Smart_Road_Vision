@@ -11,7 +11,7 @@ from __future__ import annotations
 import sqlite3
 import threading
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -58,7 +58,7 @@ CREATE INDEX IF NOT EXISTS idx_det_created ON detections(created_at);
 
 
 def _now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 class DetectionStore:
@@ -133,7 +133,10 @@ class DetectionStore:
                         str(a.urgency),
                         a.depth_mm,
                         a.area_px,
-                        x1, y1, x2, y2,
+                        x1,
+                        y1,
+                        x2,
+                        y2,
                     ),
                 )
             self._conn.commit()
@@ -175,9 +178,7 @@ class DetectionStore:
             clauses.append("source = ?")
             params.append(source)
         if severity:
-            clauses.append(
-                "id IN (SELECT detection_id FROM anomalies WHERE severity_level = ?)"
-            )
+            clauses.append("id IN (SELECT detection_id FROM anomalies WHERE severity_level = ?)")
             params.append(severity.upper())
         if clauses:
             sql += " WHERE " + " AND ".join(clauses)
@@ -190,9 +191,7 @@ class DetectionStore:
     def get_detection(self, det_id: int) -> dict[str, Any] | None:
         """Return a single detection with its anomalies."""
         with self._lock:
-            row = self._conn.execute(
-                "SELECT * FROM detections WHERE id = ?", (det_id,)
-            ).fetchone()
+            row = self._conn.execute("SELECT * FROM detections WHERE id = ?", (det_id,)).fetchone()
             if row is None:
                 return None
             anoms = self._conn.execute(
@@ -222,8 +221,12 @@ class DetectionStore:
 
         total_detections = len(det_rows)
         total_anomalies = len(anom_rows)
-        road_scores = [r["road_condition_score"] for r in det_rows if r["road_condition_score"] is not None]
-        costs = [r["estimated_repair_cost"] for r in det_rows if r["estimated_repair_cost"] is not None]
+        road_scores = [
+            r["road_condition_score"] for r in det_rows if r["road_condition_score"] is not None
+        ]
+        costs = [
+            r["estimated_repair_cost"] for r in det_rows if r["estimated_repair_cost"] is not None
+        ]
         confs = [r["confidence"] for r in anom_rows if r["confidence"] is not None]
         sev_scores = [r["severity_score"] for r in anom_rows if r["severity_score"] is not None]
 
@@ -235,9 +238,13 @@ class DetectionStore:
         return {
             "total_detections": total_detections,
             "total_anomalies": total_anomalies,
-            "avg_road_score": round(sum(road_scores) / len(road_scores), 1) if road_scores else 100.0,
+            "avg_road_score": round(sum(road_scores) / len(road_scores), 1)
+            if road_scores
+            else 100.0,
             "avg_confidence": round(sum(confs) / len(confs), 3) if confs else 0.0,
-            "avg_severity_score": round(sum(sev_scores) / len(sev_scores), 3) if sev_scores else 0.0,
+            "avg_severity_score": round(sum(sev_scores) / len(sev_scores), 3)
+            if sev_scores
+            else 0.0,
             "total_repair_cost": round(sum(costs), 2),
             "currency": currency,
             "critical_count": int(by_severity.get("CRITICAL", 0)),

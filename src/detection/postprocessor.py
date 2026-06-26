@@ -16,9 +16,9 @@ from src.detection.types import AnomalyDetection, SeverityLevel
 logger = get_logger(__name__)
 
 _SEVERITY_COLORS: dict[SeverityLevel, tuple[int, int, int]] = {
-    SeverityLevel.LOW: (0, 200, 0),       # green
+    SeverityLevel.LOW: (0, 200, 0),  # green
     SeverityLevel.MEDIUM: (0, 215, 255),  # yellow
-    SeverityLevel.HIGH: (0, 140, 255),    # orange
+    SeverityLevel.HIGH: (0, 140, 255),  # orange
     SeverityLevel.CRITICAL: (0, 0, 255),  # red
 }
 
@@ -60,8 +60,7 @@ def non_max_suppression(
         ordered = [
             d
             for d in ordered
-            if (not class_agnostic and d.class_id != best.class_id)
-            or _iou(best, d) < iou_threshold
+            if (not class_agnostic and d.class_id != best.class_id) or _iou(best, d) < iou_threshold
         ]
     return keep
 

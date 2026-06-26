@@ -65,7 +65,7 @@ def draw_summary_banner(
         A new image with a summary banner.
     """
     out = image.copy()
-    h, w = out.shape[:2]
+    _h, w = out.shape[:2]
     banner_h = 40
     overlay = out.copy()
     cv2.rectangle(overlay, (0, 0), (w, banner_h), (30, 30, 30), -1)
@@ -76,9 +76,7 @@ def draw_summary_banner(
         counts[det.class_name] = counts.get(det.class_name, 0) + 1
     summary = ", ".join(f"{k}:{v}" for k, v in counts.items()) or "no anomalies"
     text = f"Anomalies: {len(detections)} ({summary})  |  Road score: {road_score:.0f}/100"
-    cv2.putText(
-        out, text, (10, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv2.LINE_AA
-    )
+    cv2.putText(out, text, (10, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv2.LINE_AA)
     return out
 
 

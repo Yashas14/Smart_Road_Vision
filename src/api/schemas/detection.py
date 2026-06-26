@@ -66,11 +66,7 @@ class AnomalyResult(BaseModel):
             confidence=det.confidence,
             bbox_xyxy=BBox(x1=x1, y1=y1, x2=x2, y2=y2),
             bbox_xywhn=[cx, cy, w, h],
-            polygon_mask=(
-                [[px, py] for px, py in det.polygon_mask]
-                if det.polygon_mask
-                else None
-            ),
+            polygon_mask=([[px, py] for px, py in det.polygon_mask] if det.polygon_mask else None),
             severity_score=det.severity_score,
             severity_level=str(det.severity_level),
             urgency=str(det.urgency),
@@ -112,9 +108,7 @@ class DetectionResponse(BaseModel):
         return cls(
             detection_id=detection_id,
             detections=[
-                AnomalyResult.from_detection(
-                    d, result.image_width, result.image_height
-                )
+                AnomalyResult.from_detection(d, result.image_width, result.image_height)
                 for d in result.detections
             ],
             count=result.count,

@@ -38,7 +38,8 @@ def _fetch_geotagged(limit: int = 500) -> list[dict]:
         resp = requests.get(f"{API_BASE}/detect", params={"limit": limit}, timeout=30)
         resp.raise_for_status()
         return [
-            r for r in resp.json()
+            r
+            for r in resp.json()
             if r.get("latitude") is not None and r.get("longitude") is not None
         ]
     except requests.RequestException as exc:
@@ -77,7 +78,5 @@ for r in records:
         icon=folium.Icon(color=color, icon="exclamation-triangle", prefix="fa"),
     ).add_to(cluster)
 
-st.markdown(
-    "**Legend:** 🟢 good (≥80) · 🟠 fair (≥60) · 🔴 poor (≥40) · ⚫ critical (<40)"
-)
+st.markdown("**Legend:** 🟢 good (≥80) · 🟠 fair (≥60) · 🔴 poor (≥40) · ⚫ critical (<40)")
 st_folium(fmap, use_container_width=True, height=600)

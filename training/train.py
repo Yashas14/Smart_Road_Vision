@@ -13,9 +13,10 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from training.dataset_prep import prepare_dataset
+
 from src.core.config import get_settings
 from src.core.logging import configure_logging, get_logger
-from training.dataset_prep import prepare_dataset
 
 logger = get_logger(__name__)
 

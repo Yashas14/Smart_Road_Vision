@@ -93,9 +93,7 @@ def process_folder_task(self: Any, folder: str) -> dict[str, Any]:
 
 
 @celery_app.task(bind=True, name="batch.process_video")
-def process_video_task(
-    self: Any, source: str, output_path: str | None = None
-) -> dict[str, Any]:
+def process_video_task(self: Any, source: str, output_path: str | None = None) -> dict[str, Any]:
     """Process a video file asynchronously.
 
     Args:

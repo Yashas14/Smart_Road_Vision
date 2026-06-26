@@ -46,9 +46,7 @@ if submitted:
     }
     with st.spinner("Generating PDF report..."):
         try:
-            resp = requests.post(
-                f"{API_BASE}/reports/generate", json=payload, timeout=120
-            )
+            resp = requests.post(f"{API_BASE}/reports/generate", json=payload, timeout=120)
             resp.raise_for_status()
             report = resp.json()
         except requests.RequestException as exc:

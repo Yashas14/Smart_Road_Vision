@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+from tests.conftest import make_detection
+
 from src.analytics.cost_estimator import (
     CostEstimate,
     CostReport,
     MaintenanceCostEstimator,
 )
 from src.detection.types import SeverityLevel, UrgencyTag
-from tests.conftest import make_detection
 
 
 def _scored(class_name: str, severity_score: float, **kwargs) -> object:

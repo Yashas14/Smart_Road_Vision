@@ -59,7 +59,7 @@ class ClassicalAnomalyDetector:
 
     # -- public API ---------------------------------------------------------
     @property
-    def is_loaded(self) -> bool:  # noqa: D401 - parity with AnomalyDetector
+    def is_loaded(self) -> bool:
         """Always ready; nothing to load."""
         return True
 
@@ -82,7 +82,9 @@ class ClassicalAnomalyDetector:
         detections.sort(key=lambda d: d.confidence, reverse=True)
         detections = detections[: self.max_detections]
         elapsed_ms = (time.perf_counter() - start) * 1000.0
-        logger.info("image_detected_fallback", count=len(detections), latency_ms=round(elapsed_ms, 2))
+        logger.info(
+            "image_detected_fallback", count=len(detections), latency_ms=round(elapsed_ms, 2)
+        )
         return FrameResult(
             detections=detections,
             image_width=w,
@@ -102,9 +104,7 @@ class ClassicalAnomalyDetector:
         background = cv2.blur(gray, (kernel, kernel))
         diff = cv2.subtract(background, gray)  # bright where gray << background
 
-        _, mask = cv2.threshold(
-            diff, float(self.darkness_delta), 255, cv2.THRESH_BINARY
-        )
+        _, mask = cv2.threshold(diff, float(self.darkness_delta), 255, cv2.THRESH_BINARY)
         morph = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, morph, iterations=1)
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, morph, iterations=2)

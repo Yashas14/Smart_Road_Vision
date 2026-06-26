@@ -11,8 +11,8 @@ import streamlit as st
 # Allow importing dashboard components when run by Streamlit.
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from components.metrics_cards import render_metric_row, severity_badge  # noqa: E402
-from components.sidebar import render_sidebar  # noqa: E402
+from components.metrics_cards import render_metric_row, severity_badge
+from components.sidebar import render_sidebar
 
 st.set_page_config(page_title="Live Detection", page_icon="🎥", layout="wide")
 
@@ -74,9 +74,7 @@ def _render_result(result: dict) -> None:
 
 
 with tab_image:
-    uploaded = st.file_uploader(
-        "Upload a road image", type=["jpg", "jpeg", "png", "webp"]
-    )
+    uploaded = st.file_uploader("Upload a road image", type=["jpg", "jpeg", "png", "webp"])
     if uploaded is not None:
         st.image(uploaded, caption="Input image", width=400)
         if st.button("🔍 Detect anomalies", type="primary"):

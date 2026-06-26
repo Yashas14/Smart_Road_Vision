@@ -7,7 +7,7 @@ suite runs fully offline and deterministically.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import numpy as np
 import pytest
@@ -44,7 +44,7 @@ def make_detection(
         bbox=bbox,
         area_px=bbox.area,
         depth_mm=depth_mm,
-        timestamp=datetime(2025, 1, 1, tzinfo=timezone.utc),
+        timestamp=datetime(2025, 1, 1, tzinfo=UTC),
     )
 
 
@@ -74,7 +74,7 @@ class FakeDetector:
         self.is_loaded = True
         self.model_version = "yolov11-test"
 
-    def load(self) -> None:  # noqa: D401 - trivial
+    def load(self) -> None:
         """No-op load."""
         self.is_loaded = True
 

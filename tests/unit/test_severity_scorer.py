@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import pytest
+from tests.conftest import make_detection
 
 from src.detection.severity_scorer import SeverityScorer
 from src.detection.types import SeverityLevel, UrgencyTag
-from tests.conftest import make_detection
 
 
 @pytest.fixture

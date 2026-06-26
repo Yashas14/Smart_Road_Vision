@@ -20,9 +20,7 @@ from src.core.logging import configure_logging, get_logger
 
 logger = get_logger(__name__)
 
-SAM2_URL = (
-    "https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_small.pt"
-)
+SAM2_URL = "https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_small.pt"
 
 
 def _download(url: str, dest: Path) -> None:
@@ -32,7 +30,7 @@ def _download(url: str, dest: Path) -> None:
         logger.info("already_downloaded", path=str(dest))
         return
     logger.info("downloading", url=url, dest=str(dest))
-    urllib.request.urlretrieve(url, dest)  # noqa: S310 - trusted official URL
+    urllib.request.urlretrieve(url, dest)
     logger.info("downloaded", path=str(dest), size_mb=round(dest.stat().st_size / 1e6, 1))
 
 

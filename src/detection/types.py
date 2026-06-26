@@ -7,7 +7,7 @@ segmentor, depth estimator and severity scorer.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Any
 
@@ -101,7 +101,7 @@ class AnomalyDetection:
     area_px: float = 0.0
     area_m2: float | None = None
     track_id: int | None = None
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     def to_dict(self) -> dict[str, Any]:
         """Serialise to a JSON-friendly dictionary."""

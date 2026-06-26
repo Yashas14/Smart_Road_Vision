@@ -61,9 +61,7 @@ class _IoUTracker:
                 det.track_id = best["id"]
             else:
                 det.track_id = self._next_id
-                self._tracks.append(
-                    {"id": self._next_id, "box": det.bbox.xyxy(), "age": 0}
-                )
+                self._tracks.append({"id": self._next_id, "box": det.bbox.xyxy(), "age": 0})
                 self._next_id += 1
         self._tracks = [t for t in self._tracks if t["age"] <= self.max_age]
 
@@ -111,9 +109,7 @@ class VideoPipeline:
             logger.info("using_iou_tracker_fallback")
             return _IoUTracker()
 
-    def _apply_tracking(
-        self, detections: list[AnomalyDetection], frame: np.ndarray
-    ) -> None:
+    def _apply_tracking(self, detections: list[AnomalyDetection], frame: np.ndarray) -> None:
         """Assign track ids using the active tracker."""
         if isinstance(self.tracker, _IoUTracker):
             self.tracker.update(detections)
@@ -161,9 +157,7 @@ class VideoPipeline:
         finally:
             cap.release()
 
-    def process(
-        self, source: str | Path, output_path: str | Path | None = None
-    ) -> VideoSummary:
+    def process(self, source: str | Path, output_path: str | Path | None = None) -> VideoSummary:
         """Process a full video and optionally write an annotated copy.
 
         Args:

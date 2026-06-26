@@ -22,9 +22,7 @@ def test_process_returns_same_shape(
     assert out.dtype == np.uint8
 
 
-def test_clahe_preserves_shape(
-    preprocessor: Preprocessor, synthetic_image: np.ndarray
-) -> None:
+def test_clahe_preserves_shape(preprocessor: Preprocessor, synthetic_image: np.ndarray) -> None:
     out = preprocessor.apply_clahe(synthetic_image)
     assert out.shape == synthetic_image.shape
 
@@ -47,8 +45,6 @@ def test_empty_image_raises(preprocessor: Preprocessor) -> None:
         preprocessor.process(np.empty((0, 0, 3), dtype=np.uint8))
 
 
-def test_denoise_keeps_shape(
-    preprocessor: Preprocessor, synthetic_image: np.ndarray
-) -> None:
+def test_denoise_keeps_shape(preprocessor: Preprocessor, synthetic_image: np.ndarray) -> None:
     out = preprocessor.process(synthetic_image, denoise=True)
     assert out.shape == synthetic_image.shape

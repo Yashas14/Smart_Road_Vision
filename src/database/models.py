@@ -8,7 +8,7 @@ are stored as PostGIS ``POINT`` geometries via GeoAlchemy2.
 from __future__ import annotations
 
 from collections.abc import AsyncGenerator
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from geoalchemy2 import Geometry
@@ -26,7 +26,7 @@ settings = get_settings()
 
 
 def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class Location(SQLModel, table=True):
@@ -46,7 +46,7 @@ class Location(SQLModel, table=True):
     )
     created_at: datetime = Field(default_factory=_utcnow)
 
-    detections: list["Detection"] = Relationship(back_populates="location")
+    detections: list[Detection] = Relationship(back_populates="location")
 
 
 class Detection(SQLModel, table=True):
@@ -66,7 +66,7 @@ class Detection(SQLModel, table=True):
     created_at: datetime = Field(default_factory=_utcnow, index=True)
 
     location: Location | None = Relationship(back_populates="detections")
-    anomalies: list["Anomaly"] = Relationship(
+    anomalies: list[Anomaly] = Relationship(
         back_populates="detection",
         sa_relationship_kwargs={"cascade": "all, delete-orphan"},
     )
@@ -129,9 +129,7 @@ _engine = create_async_engine(
     max_overflow=20,
 )
 
-_session_factory = async_sessionmaker(
-    bind=_engine, class_=AsyncSession, expire_on_commit=False
-)
+_session_factory = async_sessionmaker(bind=_engine, class_=AsyncSession, expire_on_commit=False)
 
 
 def get_engine():

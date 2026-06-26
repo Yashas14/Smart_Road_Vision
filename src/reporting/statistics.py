@@ -67,9 +67,7 @@ class DetectionStatistics:
         if self.is_empty:
             return StatisticsSummary(
                 avg_road_score=(
-                    round(sum(road_scores) / len(road_scores), 1)
-                    if road_scores
-                    else 100.0
+                    round(sum(road_scores) / len(road_scores), 1) if road_scores else 100.0
                 )
             )
 
@@ -77,13 +75,11 @@ class DetectionStatistics:
         by_severity = self.df["severity_level"].value_counts().to_dict()
         avg_conf = round(float(self.df["confidence"].mean()), 4)
         avg_sev = round(float(self.df["severity_score"].mean()), 4)
-        avg_road = (
-            round(sum(road_scores) / len(road_scores), 1) if road_scores else 100.0
-        )
+        avg_road = round(sum(road_scores) / len(road_scores), 1) if road_scores else 100.0
 
         queue = self._priority_queue()
         return StatisticsSummary(
-            total_anomalies=int(len(self.df)),
+            total_anomalies=len(self.df),
             by_class={str(k): int(v) for k, v in by_class.items()},
             by_severity={str(k): int(v) for k, v in by_severity.items()},
             avg_confidence=avg_conf,
@@ -99,11 +95,12 @@ class DetectionStatistics:
             df["_rank"] = df["urgency"].map(_URGENCY_RANK).fillna(9)
         else:
             df["_rank"] = 9
-        df = df.sort_values(
-            by=["_rank", "severity_score"], ascending=[True, False]
-        ).head(top_n)
-        cols = [c for c in ["class_name", "severity_level", "urgency", "severity_score",
-                            "depth_mm"] if c in df.columns]
+        df = df.sort_values(by=["_rank", "severity_score"], ascending=[True, False]).head(top_n)
+        cols = [
+            c
+            for c in ["class_name", "severity_level", "urgency", "severity_score", "depth_mm"]
+            if c in df.columns
+        ]
         return df[cols].to_dict(orient="records")
 
     def hourly_trend(self) -> pd.DataFrame:
@@ -115,9 +112,7 @@ class DetectionStatistics:
         df = df.dropna(subset=["created_at"])
         if df.empty:
             return pd.DataFrame(columns=["period", "count"])
-        grouped = (
-            df.set_index("created_at").resample("1h").size().reset_index(name="count")
-        )
+        grouped = df.set_index("created_at").resample("1h").size().reset_index(name="count")
         grouped = grouped.rename(columns={"created_at": "period"})
         return grouped
 
@@ -126,6 +121,4 @@ class DetectionStatistics:
         if self.is_empty or "severity_score" not in self.df.columns:
             return pd.DataFrame(columns=["index", "rolling_severity"])
         series = self.df["severity_score"].rolling(window, min_periods=1).mean()
-        return pd.DataFrame(
-            {"index": range(len(series)), "rolling_severity": series.to_numpy()}
-        )
+        return pd.DataFrame({"index": range(len(series)), "rolling_severity": series.to_numpy()})

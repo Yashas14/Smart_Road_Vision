@@ -101,5 +101,5 @@ def resize_keep_aspect(image: np.ndarray, max_side: int = 1280) -> np.ndarray:
     if longest <= max_side:
         return image
     scale = max_side / float(longest)
-    new_size = (int(round(w * scale)), int(round(h * scale)))
+    new_size = (round(w * scale), round(h * scale))
     return cv2.resize(image, new_size, interpolation=cv2.INTER_AREA)

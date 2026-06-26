@@ -10,10 +10,10 @@ from src.api.schemas.detection import (
 from src.api.schemas.report import ReportRequest, ReportResponse
 
 __all__ = [
-    "BBox",
-    "GeoCoordinate",
     "AnomalyResult",
+    "BBox",
     "DetectionResponse",
+    "GeoCoordinate",
     "HealthResponse",
     "ReportRequest",
     "ReportResponse",

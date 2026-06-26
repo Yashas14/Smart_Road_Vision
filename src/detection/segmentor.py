@@ -113,7 +113,7 @@ class AnomalySegmentor:
             self._predictor.set_image(rgb)
             for det in detections:
                 box = np.array(det.bbox.xyxy(), dtype=np.float32)
-                masks, scores, _ = self._predictor.predict(
+                masks, _scores, _ = self._predictor.predict(
                     box=box[None, :], multimask_output=False
                 )
                 mask = masks[0]

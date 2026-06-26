@@ -2,4 +2,4 @@
 
 from src.database.models import Anomaly, Detection, Location, Report
 
-__all__ = ["Detection", "Anomaly", "Location", "Report"]
+__all__ = ["Anomaly", "Detection", "Location", "Report"]

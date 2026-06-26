@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Annotated, Any
 
+import anyio
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -70,9 +72,7 @@ async def generate_report(
     except SmartRoadVisionError as exc:
         raise HTTPException(status_code=exc.status_code, detail=exc.message) from exc
 
-    avg_score = (
-        round(sum(road_scores) / len(road_scores), 1) if road_scores else 100.0
-    )
+    avg_score = round(sum(road_scores) / len(road_scores), 1) if road_scores else 100.0
     report = await crud.create_report(
         session,
         Report(
@@ -112,9 +112,7 @@ async def generate_report_offline(
     records = store.all_anomaly_records()
     detections = store.list_detections(limit=1000)
     road_scores = [
-        d["road_condition_score"]
-        for d in detections
-        if d.get("road_condition_score") is not None
+        d["road_condition_score"] for d in detections if d.get("road_condition_score") is not None
     ]
     if not records:
         raise HTTPException(
@@ -134,9 +132,7 @@ async def generate_report_offline(
         raise HTTPException(status_code=exc.status_code, detail=exc.message) from exc
 
     path = Path(pdf_path)
-    return FileResponse(
-        path, media_type="application/pdf", filename=path.name
-    )
+    return FileResponse(path, media_type="application/pdf", filename=path.name)
 
 
 @router.get("/{report_id}", response_model=ReportResponse)
@@ -170,9 +166,7 @@ async def download_report(
     report = await crud.get_report(session, report_id)
     if report is None or not report.file_path:
         raise HTTPException(status_code=404, detail="Report not found")
-    path = Path(report.file_path)
-    if not path.exists():
+    path = report.file_path
+    if not await anyio.Path(path).is_file():
         raise HTTPException(status_code=410, detail="Report file no longer available")
-    return FileResponse(
-        path, media_type="application/pdf", filename=path.name
-    )
+    return FileResponse(path, media_type="application/pdf", filename=os.path.basename(path))

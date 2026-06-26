@@ -34,11 +34,12 @@ def _run_image(source: Path, save: str | None) -> None:
     if image is None:
         raise SystemExit(f"Could not read image: {source}")
     result, annotated = pipeline.process(image, annotate=True)
-    print(f"Detected {result.count} anomalies | "
-          f"road score {result.road_condition_score:.0f}/100")
+    print(f"Detected {result.count} anomalies | road score {result.road_condition_score:.0f}/100")
     for det in result.detections:
-        print(f"  - {det.class_name}: conf={det.confidence:.2f} "
-              f"severity={det.severity_level} depth={det.depth_mm}mm")
+        print(
+            f"  - {det.class_name}: conf={det.confidence:.2f} "
+            f"severity={det.severity_level} depth={det.depth_mm}mm"
+        )
     if save and annotated is not None:
         cv2.imwrite(save, annotated)
         print(f"Saved annotated image to {save}")

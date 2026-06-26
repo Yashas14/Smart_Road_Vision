@@ -59,16 +59,14 @@ with left:
     if ts.empty:
         st.caption("Not enough timestamped data.")
     else:
-        fig = px.area(
-            ts, x="created_at", y="anomaly_count", labels={"anomaly_count": "anomalies"}
-        )
-        fig.update_layout(margin=dict(l=0, r=0, t=10, b=0), height=320)
+        fig = px.area(ts, x="created_at", y="anomaly_count", labels={"anomaly_count": "anomalies"})
+        fig.update_layout(margin={"l": 0, "r": 0, "t": 10, "b": 0}, height=320)
         st.plotly_chart(fig, use_container_width=True)
 
 with right:
     st.subheader("Road condition score distribution")
     fig2 = px.histogram(df, x="road_condition_score", nbins=20)
-    fig2.update_layout(margin=dict(l=0, r=0, t=10, b=0), height=320)
+    fig2.update_layout(margin={"l": 0, "r": 0, "t": 10, "b": 0}, height=320)
     st.plotly_chart(fig2, use_container_width=True)
 
 st.divider()
@@ -80,7 +78,7 @@ with left2:
     src_counts = df["source"].value_counts().reset_index()
     src_counts.columns = ["source", "count"]
     fig3 = px.pie(src_counts, names="source", values="count", hole=0.55)
-    fig3.update_layout(margin=dict(l=0, r=0, t=10, b=0), height=320)
+    fig3.update_layout(margin={"l": 0, "r": 0, "t": 10, "b": 0}, height=320)
     st.plotly_chart(fig3, use_container_width=True)
 
 with right2:

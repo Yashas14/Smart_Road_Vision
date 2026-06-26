@@ -35,9 +35,7 @@ async def create_location(
         longitude=point.longitude,
         altitude=point.altitude,
         road_name=road_name,
-        geom=func.ST_SetSRID(
-            func.ST_MakePoint(point.longitude, point.latitude), 4326
-        ),
+        geom=func.ST_SetSRID(func.ST_MakePoint(point.longitude, point.latitude), 4326),
     )
     session.add(location)
     await session.flush()
@@ -140,9 +138,7 @@ async def list_detections(
     if severity is not None:
         stmt = stmt.where(
             Detection.id.in_(
-                select(Anomaly.detection_id).where(
-                    Anomaly.severity_level == severity.upper()
-                )
+                select(Anomaly.detection_id).where(Anomaly.severity_level == severity.upper())
             )
         )
     stmt = stmt.limit(limit).offset(offset)
@@ -198,19 +194,15 @@ async def find_critical_within_radius(
         ORDER BY distance_m ASC
         """
     )
-    rows = await session.execute(
-        query, {"lat": latitude, "lon": longitude, "radius": radius_m}
-    )
+    rows = await session.execute(query, {"lat": latitude, "lon": longitude, "radius": radius_m})
     return [dict(r._mapping) for r in rows]
 
 
 async def severity_breakdown(session: AsyncSession) -> dict[str, int]:
     """Return anomaly counts grouped by severity level."""
-    stmt = select(Anomaly.severity_level, func.count()).group_by(
-        Anomaly.severity_level
-    )
+    stmt = select(Anomaly.severity_level, func.count()).group_by(Anomaly.severity_level)
     rows = await session.execute(stmt)
-    return {level: count for level, count in rows.all()}
+    return dict(rows.all())
 
 
 async def create_report(session: AsyncSession, report: Report) -> Report:

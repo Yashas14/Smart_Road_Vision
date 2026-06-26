@@ -49,11 +49,7 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
 
     precision = float(metrics.box.mp)
     recall = float(metrics.box.mr)
-    f1 = (
-        2 * precision * recall / (precision + recall)
-        if (precision + recall) > 0
-        else 0.0
-    )
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
 
     results = {
         "map50": round(float(metrics.box.map50), 4),

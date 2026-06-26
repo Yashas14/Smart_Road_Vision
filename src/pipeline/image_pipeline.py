@@ -86,13 +86,9 @@ class ImagePipeline:
         if result.detections:
             self.segmentor.segment(processed, result.detections)
             self.depth_estimator.annotate_depths(processed, result.detections)
-            self.scorer.score(
-                result.detections, result.image_width, result.image_height
-            )
+            self.scorer.score(result.detections, result.image_width, result.image_height)
 
-        result.road_condition_score = self.scorer.road_condition_score(
-            result.detections
-        )
+        result.road_condition_score = self.scorer.road_condition_score(result.detections)
 
         annotated = None
         if annotate:

@@ -33,9 +33,7 @@ class Preprocessor:
         self.denoise_h = int(cfg.get("denoise_h", 7))
         self.enable_night = bool(cfg.get("enable_night_mode", True))
         self.enable_rain = bool(cfg.get("enable_rain_mode", False))
-        self._clahe = cv2.createCLAHE(
-            clipLimit=self.clahe_clip, tileGridSize=self.clahe_grid
-        )
+        self._clahe = cv2.createCLAHE(clipLimit=self.clahe_clip, tileGridSize=self.clahe_grid)
 
     def apply_clahe(self, image: np.ndarray) -> np.ndarray:
         """Apply CLAHE on the L channel of the LAB colour space.
@@ -61,9 +59,7 @@ class Preprocessor:
         Returns:
             Denoised BGR image.
         """
-        return cv2.fastNlMeansDenoisingColored(
-            image, None, self.denoise_h, self.denoise_h, 7, 21
-        )
+        return cv2.fastNlMeansDenoisingColored(image, None, self.denoise_h, self.denoise_h, 7, 21)
 
     @staticmethod
     def _is_low_light(image: np.ndarray, threshold: float = 80.0) -> bool:
@@ -82,9 +78,7 @@ class Preprocessor:
         """
         gamma = 1.6
         inv = 1.0 / gamma
-        table = np.array(
-            [((i / 255.0) ** inv) * 255 for i in range(256)], dtype=np.uint8
-        )
+        table = np.array([((i / 255.0) ** inv) * 255 for i in range(256)], dtype=np.uint8)
         return cv2.LUT(image, table)
 
     def remove_rain(self, image: np.ndarray) -> np.ndarray:

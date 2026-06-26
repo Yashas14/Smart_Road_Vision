@@ -8,6 +8,7 @@ configured maximum FPS.
 from __future__ import annotations
 
 import asyncio
+from contextlib import suppress
 
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
@@ -51,10 +52,8 @@ async def stream_endpoint(
         logger.info("ws_stream_disconnected", source=source)
     except Exception as exc:  # pragma: no cover
         logger.error("ws_stream_error", error=str(exc))
-        try:
+        with suppress(Exception):
             await websocket.send_json({"type": "error", "detail": str(exc)})
-        except Exception:
-            pass
     finally:
         stop.set()
         await ws_manager.disconnect(websocket)

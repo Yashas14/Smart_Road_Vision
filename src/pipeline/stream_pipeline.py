@@ -20,7 +20,6 @@ import numpy as np
 from src.core.config import Settings, get_settings
 from src.core.exceptions import StreamError
 from src.core.logging import get_logger
-from src.detection.postprocessor import draw_annotations
 from src.detection.types import FrameResult
 from src.pipeline.image_pipeline import ImagePipeline
 

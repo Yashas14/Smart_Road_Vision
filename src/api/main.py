@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import signal
 from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -60,13 +60,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         get_store()
     except Exception as exc:  # pragma: no cover
         logger.warning("store_init_skipped", error=str(exc))
+
     def _handle_sigterm(*_: object) -> None:
         logger.info("sigterm_received")
 
-    try:
+    with suppress(ValueError):  # pragma: no cover - not in main thread
         signal.signal(signal.SIGTERM, _handle_sigterm)
-    except ValueError:  # pragma: no cover - not in main thread
-        pass
 
     logger.info("startup_complete")
     yield
@@ -97,9 +96,7 @@ def create_app() -> FastAPI:
     )
 
     @app.exception_handler(SmartRoadVisionError)
-    async def _domain_error_handler(
-        _: Request, exc: SmartRoadVisionError
-    ) -> JSONResponse:
+    async def _domain_error_handler(_: Request, exc: SmartRoadVisionError) -> JSONResponse:
         return JSONResponse(status_code=exc.status_code, content=exc.to_dict())
 
     prefix = settings.api_v1_prefix

@@ -21,7 +21,6 @@ from src.detection.fallback_detector import ClassicalAnomalyDetector
 from src.detection.types import AnomalyDetection, BoundingBox, FrameResult
 
 if TYPE_CHECKING:  # pragma: no cover
-    import torch
     from ultralytics import YOLO
 
 logger = get_logger(__name__)
@@ -129,9 +128,7 @@ class AnomalyDetector:
             return
         dummy = np.zeros((self.imgsz, self.imgsz, 3), dtype=np.uint8)
         try:
-            self._model.predict(
-                dummy, imgsz=self.imgsz, device=self.device, verbose=False
-            )
+            self._model.predict(dummy, imgsz=self.imgsz, device=self.device, verbose=False)
         except Exception as exc:  # pragma: no cover
             logger.warning("detector_warmup_failed", error=str(exc))
 
@@ -140,9 +137,7 @@ class AnomalyDetector:
             self.load()
         return self._model
 
-    def _parse_results(
-        self, result: Any, img_w: int, img_h: int
-    ) -> list[AnomalyDetection]:
+    def _parse_results(self, result: Any, img_w: int, img_h: int) -> list[AnomalyDetection]:
         """Convert a single ultralytics result into anomaly detections."""
         detections: list[AnomalyDetection] = []
         boxes = getattr(result, "boxes", None)
@@ -213,9 +208,7 @@ class AnomalyDetector:
             model_version=self.model_version,
         )
 
-    def detect_frames(
-        self, frames: Iterable[np.ndarray]
-    ) -> Iterator[FrameResult]:
+    def detect_frames(self, frames: Iterable[np.ndarray]) -> Iterator[FrameResult]:
         """Lazily run detection over an iterable of frames.
 
         Args:
@@ -229,9 +222,7 @@ class AnomalyDetector:
             result.frame_index = idx
             yield result
 
-    async def detect_stream(
-        self, frames: AsyncIterator[np.ndarray]
-    ) -> AsyncIterator[FrameResult]:
+    async def detect_stream(self, frames: AsyncIterator[np.ndarray]) -> AsyncIterator[FrameResult]:
         """Asynchronously run detection over a stream of frames.
 
         Args:

@@ -7,6 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Any
 
+import anyio
 import cv2
 import numpy as np
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
@@ -112,9 +113,7 @@ async def detect_image(
     detection_id: int | None = None
     if persist:
         try:
-            record = await crud.save_frame_result(
-                session, result, source="image", point=point
-            )
+            record = await crud.save_frame_result(session, result, source="image", point=point)
             detection_id = record.id
         except Exception as exc:  # pragma: no cover - db optional in some envs
             logger.warning("persist_failed", error=str(exc))
@@ -122,11 +121,7 @@ async def detect_image(
     annotated_b64 = (
         image_to_base64(annotated_img) if annotate and annotated_img is not None else None
     )
-    location = (
-        GeoCoordinate(latitude=point.latitude, longitude=point.longitude)
-        if point
-        else None
-    )
+    location = GeoCoordinate(latitude=point.latitude, longitude=point.longitude) if point else None
     cost_report = _cost_estimator.estimate(result.detections)
     store_id = None
     if persist:
@@ -179,7 +174,11 @@ async def detect_batch(
             det_id = None
             if persist:
                 det_id = _persist_to_store(
-                    result, "batch", point, cost.total_cost, cost.currency,
+                    result,
+                    "batch",
+                    point,
+                    cost.total_cost,
+                    cost.currency,
                     _thumbnail(annotated_img if annotated_img is not None else image),
                 )
             items.append(
@@ -285,13 +284,12 @@ async def detect_video_sync(
                     )
                 if persist and result.count:
                     result.frame_index = idx
-                    _persist_to_store(
-                        result, "video", None, cost.total_cost, cost.currency, None
-                    )
+                    _persist_to_store(result, "video", None, cost.total_cost, cost.currency, None)
             idx += 1
     finally:
         cap.release()
-        Path(tmp_path).unlink(missing_ok=True)
+        with anyio.CancelScope(shield=True):
+            await anyio.Path(tmp_path).unlink(missing_ok=True)
 
     elapsed_ms = (datetime.now() - start).total_seconds() * 1000.0
     return VideoSyncResponse(
@@ -329,9 +327,7 @@ async def detect_video(
         return VideoTaskResponse(task_id=task.id, status="PENDING")
     except Exception as exc:
         logger.error("video_task_submit_failed", error=str(exc))
-        raise HTTPException(
-            status_code=503, detail=f"Task queue unavailable: {exc}"
-        ) from exc
+        raise HTTPException(status_code=503, detail=f"Task queue unavailable: {exc}") from exc
 
 
 @router.get("/video/{task_id}", response_model=VideoResultResponse)
@@ -348,13 +344,9 @@ async def get_video_result(task_id: str) -> VideoResultResponse:
             progress = async_result.info
         elif status == "SUCCESS":
             result = async_result.result
-        return VideoResultResponse(
-            task_id=task_id, status=status, progress=progress, result=result
-        )
+        return VideoResultResponse(task_id=task_id, status=status, progress=progress, result=result)
     except Exception as exc:
-        raise HTTPException(
-            status_code=503, detail=f"Task backend unavailable: {exc}"
-        ) from exc
+        raise HTTPException(status_code=503, detail=f"Task backend unavailable: {exc}") from exc
 
 
 @router.get("", response_model=list[DetectionListItem])

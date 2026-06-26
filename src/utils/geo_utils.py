@@ -117,12 +117,8 @@ def extract_gps_from_pillow(image_bytes: bytes) -> GeoPoint | None:
                     gps_info[GPSTAGS.get(key, key)] = val
         if "GPSLatitude" not in gps_info or "GPSLongitude" not in gps_info:
             return None
-        latitude = _dms_to_decimal(
-            gps_info["GPSLatitude"], gps_info.get("GPSLatitudeRef", "N")
-        )
-        longitude = _dms_to_decimal(
-            gps_info["GPSLongitude"], gps_info.get("GPSLongitudeRef", "E")
-        )
+        latitude = _dms_to_decimal(gps_info["GPSLatitude"], gps_info.get("GPSLatitudeRef", "N"))
+        longitude = _dms_to_decimal(gps_info["GPSLongitude"], gps_info.get("GPSLongitudeRef", "E"))
         return GeoPoint(latitude=latitude, longitude=longitude)
     except Exception as exc:  # pragma: no cover
         logger.debug("pillow_gps_extraction_failed", error=str(exc))

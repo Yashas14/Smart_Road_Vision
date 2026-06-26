@@ -9,7 +9,7 @@ WeasyPrint-based rendering when richer styling is desired.
 from __future__ import annotations
 
 import io
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -56,8 +56,7 @@ def _recommendation_for(summary: StatisticsSummary) -> list[str]:
         )
     if high:
         recs.append(
-            f"{high} HIGH-severity anomalies should be scheduled for urgent "
-            "repair within one week."
+            f"{high} HIGH-severity anomalies should be scheduled for urgent repair within one week."
         )
     if summary.avg_road_score < 50:
         recs.append(
@@ -138,7 +137,12 @@ class ReportGenerator:
                     ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
                     ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
                     ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
-                    ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f0f4f8")]),
+                    (
+                        "ROWBACKGROUNDS",
+                        (0, 1),
+                        (-1, -1),
+                        [colors.white, colors.HexColor("#f0f4f8")],
+                    ),
                     ("PADDING", (0, 0), (-1, -1), 6),
                 ]
             )
@@ -191,7 +195,7 @@ class ReportGenerator:
         stats = DetectionStatistics(anomaly_records)
         summary = stats.summary(road_scores)
 
-        name = output_name or f"road_report_{datetime.now(timezone.utc):%Y%m%d_%H%M%S}.pdf"
+        name = output_name or f"road_report_{datetime.now(UTC):%Y%m%d_%H%M%S}.pdf"
         out_path = self.output_dir / name
 
         try:
@@ -209,7 +213,7 @@ class ReportGenerator:
             story.append(
                 Paragraph(
                     f"SmartRoadVision v2.0 &nbsp;|&nbsp; Generated "
-                    f"{datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC}",
+                    f"{datetime.now(UTC):%Y-%m-%d %H:%M UTC}",
                     self.styles["Subtitle"],
                 )
             )
@@ -244,9 +248,7 @@ class ReportGenerator:
                 story.append(self._heading("4. Annotated Image Gallery"))
                 for img_bytes in gallery_images[: self.max_gallery]:
                     try:
-                        story.append(
-                            RLImage(io.BytesIO(img_bytes), width=15 * cm, height=9 * cm)
-                        )
+                        story.append(RLImage(io.BytesIO(img_bytes), width=15 * cm, height=9 * cm))
                         story.append(Spacer(1, 0.3 * cm))
                     except Exception:  # pragma: no cover - bad image bytes
                         continue
@@ -254,9 +256,7 @@ class ReportGenerator:
             # --- Geospatial ---
             if geo_summary:
                 story.append(self._heading("5. Geospatial Summary"))
-                geo_rows = [["Field", "Value"]] + [
-                    [str(k), str(v)] for k, v in geo_summary.items()
-                ]
+                geo_rows = [["Field", "Value"]] + [[str(k), str(v)] for k, v in geo_summary.items()]
                 geo_table = Table(geo_rows, colWidths=[8 * cm, 6 * cm])
                 geo_table.setStyle(
                     TableStyle(
@@ -307,8 +307,7 @@ class ReportGenerator:
             story.append(self._heading("8. Technical Metadata"))
             story.append(
                 Paragraph(
-                    "Model: YOLOv11 + SAM2 + MiDaS v3.1 &nbsp;|&nbsp; "
-                    "Engine: SmartRoadVision 2.0",
+                    "Model: YOLOv11 + SAM2 + MiDaS v3.1 &nbsp;|&nbsp; Engine: SmartRoadVision 2.0",
                     self.styles["Normal"],
                 )
             )

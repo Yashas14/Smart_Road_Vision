@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import numpy as np
+from tests.conftest import make_detection
 
 from src.utils.visualizer import (
     depth_heatmap,
@@ -11,7 +12,6 @@ from src.utils.visualizer import (
     render_frame,
     severity_legend,
 )
-from tests.conftest import make_detection
 
 
 def test_depth_heatmap_is_bgr_uint8() -> None:

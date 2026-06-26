@@ -18,7 +18,7 @@ from src.core.logging import get_logger
 from src.detection.types import AnomalyDetection
 
 if TYPE_CHECKING:  # pragma: no cover
-    import torch
+    pass
 
 logger = get_logger(__name__)
 
@@ -56,9 +56,7 @@ class DepthEstimator:
             self._device = "cuda" if torch.cuda.is_available() else "cpu"
             self._model = torch.hub.load(self.hub_repo, self.model_type, trust_repo=True)
             self._model.to(self._device).eval()
-            transforms = torch.hub.load(
-                self.hub_repo, "transforms", trust_repo=True
-            )
+            transforms = torch.hub.load(self.hub_repo, "transforms", trust_repo=True)
             if self.model_type == "MiDaS_small":
                 self._transform = transforms.small_transform
             else:

@@ -46,9 +46,7 @@ def prepare_dataset(
 
     rf = Roboflow(api_key=settings.roboflow_api_key)
     rf_project = rf.workspace(workspace).project(project)
-    dataset = rf_project.version(version).download(
-        "yolov11", location=str(DATASET_DIR / project)
-    )
+    dataset = rf_project.version(version).download("yolov11", location=str(DATASET_DIR / project))
     data_yaml = Path(dataset.location) / "data.yaml"
     logger.info("dataset_downloaded", path=str(data_yaml))
     return data_yaml

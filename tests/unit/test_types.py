@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
+from tests.conftest import make_detection
 
 from src.detection.types import (
     AnomalyDetection,
@@ -11,7 +13,6 @@ from src.detection.types import (
     SeverityLevel,
     UrgencyTag,
 )
-from tests.conftest import make_detection
 
 
 def test_bounding_box_dimensions() -> None:
@@ -46,7 +47,7 @@ def test_anomaly_detection_default_timestamp_is_utc() -> None:
 
 def test_anomaly_detection_to_dict_is_json_friendly() -> None:
     det = make_detection()
-    det.timestamp = datetime(2025, 1, 1, tzinfo=timezone.utc)
+    det.timestamp = datetime(2025, 1, 1, tzinfo=UTC)
     data = det.to_dict()
     assert data["bbox_xyxy"] == [100, 100, 200, 200]
     assert data["timestamp"] == "2025-01-01T00:00:00+00:00"
