@@ -59,7 +59,7 @@ jobs:
           target: runtime
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
+            ghcr.io/yashas14/smart_road_vision:latest
+            ghcr.io/yashas14/smart_road_vision:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
