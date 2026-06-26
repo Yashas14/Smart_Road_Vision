@@ -720,6 +720,31 @@ If you use SmartRoadVision in your research or project, please cite:
 Code style: Python 3.12+, type-annotated, Ruff (100 char limit), mypy-strict.
 
 ---
+## 📸 Snapshots
+
+
+<img width="1897" height="909" alt="image" src="https://github.com/user-attachments/assets/ce1db101-6333-441d-94fd-bab9450f973e" />
+
+
+
+--
+<img width="1891" height="906" alt="image" src="https://github.com/user-attachments/assets/b03e275b-c643-4faf-add1-55be037f9cdc" />
+
+---
+<img width="1897" height="904" alt="image" src="https://github.com/user-attachments/assets/ed1e79cc-96d2-4b88-9475-5bcd8c7784ce" />
+
+
+--
+<img width="1919" height="906" alt="image" src="https://github.com/user-attachments/assets/c34e371f-24f9-489a-b5aa-c7ffa4175177" />
+
+--
+<img width="1919" height="904" alt="image" src="https://github.com/user-attachments/assets/7b8dcf37-2aa2-4edf-ab49-280c1f917b8e" />
+
+--
+
+<img width="1898" height="909" alt="image" src="https://github.com/user-attachments/assets/9ad963df-7a72-4f73-a278-36912c539f5f" />
+
+---
 
 ## 📃 License
 
