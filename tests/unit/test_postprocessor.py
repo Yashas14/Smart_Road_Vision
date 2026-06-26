@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import numpy as np
-from tests.conftest import make_detection
 
 from src.detection.postprocessor import (
     _iou,
@@ -12,6 +11,7 @@ from src.detection.postprocessor import (
     normalize_coordinates,
 )
 from src.detection.types import SeverityLevel
+from tests.conftest import make_detection
 
 
 def test_iou_identical_boxes_is_one() -> None:

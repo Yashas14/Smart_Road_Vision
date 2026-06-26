@@ -5,8 +5,6 @@ from __future__ import annotations
 import csv
 import io
 
-from tests.conftest import make_detection
-
 from src.detection.types import FrameResult
 from src.utils.export import (
     CSV_COLUMNS,
@@ -15,6 +13,7 @@ from src.utils.export import (
     frame_results_to_records,
     records_to_geojson,
 )
+from tests.conftest import make_detection
 
 
 def test_detection_to_record_has_all_columns() -> None:

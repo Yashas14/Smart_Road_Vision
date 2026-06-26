@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import pytest
-from tests.conftest import make_detection
 
 from src.detection.types import FrameResult, SeverityLevel, UrgencyTag
 from src.storage.detection_store import DetectionStore
+from tests.conftest import make_detection
 
 
 @pytest.fixture

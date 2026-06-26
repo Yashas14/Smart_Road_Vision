@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from tests.conftest import make_detection
-
 from src.detection.types import (
     AnomalyDetection,
     BoundingBox,
@@ -13,6 +11,7 @@ from src.detection.types import (
     SeverityLevel,
     UrgencyTag,
 )
+from tests.conftest import make_detection
 
 
 def test_bounding_box_dimensions() -> None:

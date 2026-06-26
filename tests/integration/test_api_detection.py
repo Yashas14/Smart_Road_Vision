@@ -12,12 +12,12 @@ import cv2
 import numpy as np
 import pytest
 from httpx import ASGITransport, AsyncClient
-from tests.conftest import make_detection
 
 from src.api.dependencies import get_db, get_image_pipeline
 from src.api.main import app
 from src.detection.postprocessor import draw_annotations
 from src.detection.types import FrameResult
+from tests.conftest import make_detection
 
 
 class _FakePipeline:

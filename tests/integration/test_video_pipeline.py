@@ -7,10 +7,10 @@ from pathlib import Path
 import cv2
 import numpy as np
 import pytest
-from tests.conftest import make_detection
 
 from src.detection.types import FrameResult
 from src.pipeline.video_pipeline import VideoPipeline, _IoUTracker
+from tests.conftest import make_detection
 
 
 class _FakeImagePipeline:

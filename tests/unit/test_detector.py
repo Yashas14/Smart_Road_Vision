@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import numpy as np
-from tests.conftest import make_detection
 
 from src.detection.postprocessor import (
     draw_annotations,
@@ -11,6 +10,7 @@ from src.detection.postprocessor import (
     normalize_coordinates,
 )
 from src.detection.types import BoundingBox, SeverityLevel
+from tests.conftest import make_detection
 
 
 def test_bounding_box_geometry() -> None:
